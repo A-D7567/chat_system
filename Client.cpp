@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+
+const char *addr = "172.21.64.1";
 
 int main() {
     int clientSocket;
@@ -18,8 +21,8 @@ int main() {
     std::cout << "Client socket created..." << std::endl;
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(8080);
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
+    serverAddr.sin_port = htons(2000);
+    serverAddr.sin_addr.s_addr = inet_addr(addr);
 
     if (connect(clientSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
         perror("Error in connection");
