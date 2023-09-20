@@ -1,73 +1,78 @@
-// Server.cpp
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <thread>
+#include <vector>
+
+constexpr int PORT = 12345;
+constexpr int MAX_CONNECTIONS = 5;
+
+std::vector<int> client_sockets;
+
+void handle_client(int client_socket) {
+    char buffer[1024];
+    while (true) {
+        memset(buffer, 0, sizeof(buffer));
+        int bytes_received = recv(client_socket, buffer, sizeof(buffer), 0);
+        if (bytes_received <= 0) {
+            close(client_socket);
+            return;
+        }
+        std::cout << "Received: " << buffer << std::endl;
+
+        // Broadcast the message to all clients
+        for (int socket : client_sockets) {
+            if (socket != client_socket) {
+                send(socket, buffer, bytes_received, 0);
+            }
+        }
+    }
+}
 
 int main() {
-    int serverSocket, newSocket;
-    char buffer[1024];
-    struct sockaddr_in serverAddr, newAddr;
-    socklen_t addr_size;
-
-    serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket < 0) {
-        perror("Error in socket");
-        exit(1);
-    }
-    std::cout << "Server socket created..." << std::endl;
-
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(8080);
-    serverAddr.sin_addr.s_addr = inet_addr("10.126.65.66") 	;
-
-    if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
-        perror("Error in binding");
-        exit(1);
-    }
-    std::cout << "Binding success..." << std::endl;
-
-    if (listen(serverSocket, 10) == 0) {
-        std::cout << "Listening..." << std::endl;
-    } else {
-        std::cout << "Error in listening" << std::endl;
-        exit(1);
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == -1) {
+        perror("Socket creation failed");
+        exit(EXIT_FAILURE);
     }
 
-    addr_size = sizeof(newAddr);
-    newSocket = accept(serverSocket, (struct sockaddr*)&newAddr, &addr_size);
-    if (newSocket < 0) {
-        perror("Error in accepting");
-        exit(1);
+    sockaddr_in server_address;
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(PORT);
+    server_address.sin_addr.s_addr = INADDR_ANY;
+
+    if (bind(server_socket, (struct sockaddr*)&server_address, sizeof(server_address)) == -1) {
+        perror("Binding failed");
+        exit(EXIT_FAILURE);
     }
 
-    // Main chat loop
-while (true) {
-    memset(buffer, 0, sizeof(buffer)); // Clear the buffer
-    ssize_t bytesReceived = recv(newSocket, buffer, sizeof(buffer) - 1, 0);
-    if (bytesReceived < 0) {
-        perror("Error in receiving");
-        break;
-    } else if (bytesReceived == 0) {
-        std::cout << "Client disconnected." << std::endl;
-        break;
+    if (listen(server_socket, MAX_CONNECTIONS) == -1) {
+        perror("Listening failed");
+        exit(EXIT_FAILURE);
     }
 
-    buffer[bytesReceived] = '\0'; // Null-terminate the received message
-    std::cout << "Client: " << buffer << std::endl;
+    std::cout << "Server listening on port " << PORT << std::endl;
 
-    memset(buffer, 0, sizeof(buffer)); // Clear the buffer
-    std::cout << "Server: ";
-    std::cin.getline(buffer, sizeof(buffer));
-    send(newSocket, buffer, strlen(buffer), 0);
-}
+    while (true) {
+        sockaddr_in client_address;
+        socklen_t client_addr_len = sizeof(client_address);
 
+        int client_socket = accept(server_socket, (struct sockaddr*)&client_address, &client_addr_len);
+        if (client_socket == -1) {
+            perror("Accepting connection failed");
+            continue;
+        }
 
+        client_sockets.push_back(client_socket);
 
-    close(newSocket);
-    close(serverSocket);
+        // Create a new thread to handle the client
+        std::thread(handle_client, client_socket).detach();
+    }
 
+    close(server_socket);
     return 0;
 }
-
