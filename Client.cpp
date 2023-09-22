@@ -7,7 +7,7 @@
 #include <thread>
 #include <netinet/in.h>
 
-constexpr int PORT = 11111;
+constexpr int PORT = 22211;
 
 
 int client_socket;
@@ -19,16 +19,16 @@ void handle_send(int a)
 
     while(1)
     {
-    std::cout << "Client hello ";
-    std::cin.getline(message, sizeof(message));
+        std::cout << "Client : ";
+        std::cin.getline(message, sizeof(message));
 
-    if (strcmp(message, "q") == 0) {
-          close(client_socket);
-    }
+        if (strcmp(message, "q") == 0) 
+        {
+            close(client_socket);
+        }
 
-    send(client_socket, message, strlen(message), 0);
-
-    memset(message, 0, sizeof(message));
+        send(client_socket, message, strlen(message), 0);
+        memset(message, 0, sizeof(message));
     }
 
 }
@@ -45,12 +45,13 @@ void handle_rec(int b)
              exit(1);
         }
 
-    std::cout << "Server: " << message << std::endl;
+    std::cout << "\rServer : " << message << std::endl;
     }
 
 }
 
-int main() {
+int main() 
+{
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     if (client_socket == -1) {
         perror("Socket creation failed");
@@ -72,10 +73,8 @@ int main() {
 
     //while (true) 
     {
-        
         std::thread(handle_send, 1).detach();
-        std::thread(handle_rec, 1).detach();
-      
+        std::thread(handle_rec , 1).detach();
     }
     while(1);
     
