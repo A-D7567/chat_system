@@ -8,8 +8,7 @@
 #include <thread>
 #include <netinet/in.h>
 
-
-constexpr int PORT = 3336;
+constexpr int PORT = 3337;
 using namespace std;
 
 int client_socket;
@@ -64,7 +63,7 @@ int main()
     sockaddr_in server_address;
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(PORT);
-    server_address.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_address.sin_addr.s_addr = inet_addr("172.20.104.240");
 
     if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
     {
@@ -103,18 +102,10 @@ while (1)
         cin >> password;
         send(client_socket, password.c_str(), password.size(), 0);
 
-        // Receive server's response for login
-        memset(message, 0, sizeof(message));
-        int bytes_received = recv(client_socket, message, sizeof(message), 0);
-        if (bytes_received <= 0)
-        {
-            cout << "Server disconnected." << endl;
-            break;
-        }
-        else
-        {
-            cout << "Server: " << message << endl;
-        }
+        cout << "Login successful..." << endl;
+
+        thread(handle_send, client_socket).detach();
+        thread(handle_rec, client_socket).detach();
     }
     else if (choice == 2)
     {
@@ -133,18 +124,10 @@ while (1)
         cin >> new_password;
         send(client_socket, new_password.c_str(), new_password.size(), 0);
 
-        // Receive server's response for signup
-        memset(message, 0, sizeof(message));
-        int bytes_received = recv(client_socket, message, sizeof(message), 0);
-        if (bytes_received <= 0)
-        {
-            cout << "Server disconnected." << endl;
-            break;
-        }
-        else
-        {
-            cout << "Server: " << message << endl;
-        }
+        cout << "Sign up successful..." << endl;
+
+        thread(handle_send, client_socket).detach();
+        thread(handle_rec, client_socket).detach();
     }
     else if (choice == 3)
     {
@@ -155,10 +138,8 @@ while (1)
     else
     {
         cout << "Invalid choice. Please select 1, 2, or 3." << endl;
-    }
+
 }
-    thread(handle_send, client_socket).detach();
-    thread(handle_rec, client_socket).detach();
 
 
     close(client_socket);
