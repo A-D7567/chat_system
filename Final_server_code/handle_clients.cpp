@@ -110,9 +110,6 @@ void handle_rec(int client_socket)
             return;
         }
 
-        cout << "\r client: " << buffer << endl;
-        //Add logic to process client messages here
-
         if (strcmp(buffer, "login") == 0)
         {
             // Handle login
@@ -124,6 +121,7 @@ void handle_rec(int client_socket)
             handel_signup(client_socket);
             
         }
+        cout << "\r" <<username << " : " << buffer << endl;
         // else
         // {
         //     send(client_socket, "Authentication required.", strlen("Authentication required."), 0);
@@ -136,7 +134,7 @@ void handle_send(int client_socket)
     char buffer[1024];
     while (1)
     {
-        cout << "server : ";
+        cout << "Server : ";
         cin.getline(buffer, sizeof(buffer));
 
         if (strcmp(buffer, "q") == 0)

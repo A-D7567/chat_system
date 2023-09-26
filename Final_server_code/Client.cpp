@@ -7,19 +7,20 @@
 #include <sys/socket.h>
 #include <thread>
 #include <netinet/in.h>
+#include <unistd.h>
 
-constexpr int PORT = 3338;
+constexpr int PORT = 3337;
 using namespace std;
-
 int client_socket;
 
-void handle_send(int client_socket)
+
+void handle_send(string username)
 {
     char message[1024];
 
     while (1)
     {
-        cout << "Client : ";
+        cout << username << " : ";
         cin.getline(message, sizeof(message));
 
         if (strcmp(message, "q") == 0)
@@ -40,16 +41,17 @@ void handle_rec(int client_socket)
     while (1)
     {
         memset(message, 0, sizeof(message));
+        //write(0, "\n", strlen("\n"));
         int bytes_received = recv(client_socket, message, sizeof(message), 0);
         if (bytes_received <= 0)
         {
-            cerr << "Server disconnected." << endl;
+            cerr << "\rServer disconnected." << endl;
             close(client_socket);
             exit(1);
         }
+        cout << "\rServer : " << message <<endl;
 
-        cout << "\rServer : " << message << endl;
-        
+
     }
 }
 
@@ -86,7 +88,7 @@ int main()
     cout << "3. Quit" << endl;
     cout << "Enter your choice: ";
     cin >> choice;
-    
+
     cin.ignore();
 
     if (choice == 1)
@@ -106,9 +108,7 @@ int main()
         cin >> password;
         send(client_socket, password.c_str(), password.size(), 0);
 
-        cout << "Login successful..." << endl;
-
-        thread(handle_send, client_socket).detach();
+        thread(handle_send, username).detach();
         thread(handle_rec, client_socket).detach();
     }
     else if (choice == 2)
@@ -128,9 +128,7 @@ int main()
         cin >> new_password;
         send(client_socket, new_password.c_str(), new_password.size(), 0);
 
-        cout << "Sign up successful..." << endl;
-
-        thread(handle_send, client_socket).detach();
+        thread(handle_send, new_username).detach();
         thread(handle_rec, client_socket).detach();
     }
     else if (choice == 3)
