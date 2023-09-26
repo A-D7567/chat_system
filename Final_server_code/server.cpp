@@ -6,7 +6,7 @@
 #include "server.h"
 #include "user_auth.h"
 #include "handle_clients.h"
-
+#include <unistd.h>
 
 using namespace std;
 extern vector<UserData> user_data;
@@ -14,7 +14,6 @@ extern vector<UserData> user_data;
 int main()
 {
     vector<int> client_sockets;
-
     loadUserFile();
 
     int server_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,12 +53,16 @@ int main()
             perror("Accepting connection failed");
             continue;
         }
+        
+
         client_sockets.push_back(client_socket);
 
         // Thread to handle the client
         thread(handle_client, client_socket).detach();
     }
+
     close(server_socket);
     saveUserFile(); // Save user data
     return 0;
+
 }

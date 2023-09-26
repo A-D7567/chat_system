@@ -45,14 +45,36 @@ void saveUserFile()
 
 bool authenticateUser(const std::string &username, const std::string &password)
 {
-    for (const UserData &user : user_data)
+   for (const UserData &user : user_data)
+
     {
-        if (user.username == username && user.password == password)
+
+        if (user.username == username)
+
         {
-            return true; // Authentication successful
+
+            if (user.password == password)
+
+            {
+
+                return true; // Authentication successful
+
+            }
+
+            else
+
+            {
+
+                cout << "Enter Valid Password.." << endl;
+
+                return 0;
+
+            } // Authentication successful
+
         }
     }
-    return false; // Authentication failed
+
+    return false; 
 }
 
 bool isUsernameTaken(const std::string &username)

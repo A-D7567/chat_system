@@ -7,8 +7,9 @@
 #include <sys/socket.h>
 #include <thread>
 #include <netinet/in.h>
+#include <unistd.h>
 
-constexpr int PORT = 3338;
+constexpr int PORT = 3339;
 using namespace std;
 
 int client_socket;
@@ -40,16 +41,17 @@ void handle_rec(int client_socket)
     while (1)
     {
         memset(message, 0, sizeof(message));
+        write(0, "hello how are you all\n", strlen("\n"));
         int bytes_received = recv(client_socket, message, sizeof(message), 0);
         if (bytes_received <= 0)
         {
-            cerr << "Server disconnected." << endl;
+            cerr << "\rServer disconnected." << endl;
             close(client_socket);
             exit(1);
         }
+        cout << "\r Server : " << message <<endl;
+       
 
-        cout << "\rServer : " << message << endl;
-        
     }
 }
 
@@ -106,8 +108,6 @@ int main()
         cin >> password;
         send(client_socket, password.c_str(), password.size(), 0);
 
-        cout << "Login successful..." << endl;
-
         thread(handle_send, client_socket).detach();
         thread(handle_rec, client_socket).detach();
     }
@@ -127,8 +127,6 @@ int main()
         cout << "Enter a new password: ";
         cin >> new_password;
         send(client_socket, new_password.c_str(), new_password.size(), 0);
-
-        cout << "Sign up successful..." << endl;
 
         thread(handle_send, client_socket).detach();
         thread(handle_rec, client_socket).detach();

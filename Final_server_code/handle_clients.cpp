@@ -45,6 +45,8 @@ void handel_signup(int client_socket)
     }
 
     string new_password(buffer, password_length);
+    if(!isUsernameTaken(new_username))
+    {
     UserData new_user;
     new_user.username = new_username;
     new_user.password = new_password;
@@ -52,6 +54,13 @@ void handel_signup(int client_socket)
     saveUserFile();
 
     send(client_socket, "Signup successful.", strlen("Signup successful."), 0);
+
+    }
+    else
+    {
+        cout<< " username is already taken......." << endl ;
+        close(client_socket);
+    }
 }
 
 void handel_login(int client_socket)
@@ -93,6 +102,7 @@ void handel_login(int client_socket)
     else
     {
         send(client_socket, "Authentication failed. Try again.", strlen("Authentication failed. Try again."), 0);
+        close(client_socket);
     }
 }
 
