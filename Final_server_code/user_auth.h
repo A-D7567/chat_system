@@ -13,7 +13,7 @@ struct UserData
     std::string password;
 };
 
-std::vector <UserData> user_data;
+//std::vector <UserData> user_data;
 
 void loadUserFile();
 void saveUserFile();

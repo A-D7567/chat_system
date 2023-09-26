@@ -8,6 +8,8 @@
 
 using namespace std;
 
+vector <UserData> user_data;
+
 void loadUserFile()
 {
     ifstream userFile("users.txt");
@@ -20,6 +22,7 @@ void loadUserFile()
     while (userFile >> user.username >> user.password)
     {
         user_data.push_back(user);
+        
     }
     userFile.close();
 
@@ -35,7 +38,7 @@ void saveUserFile()
     }
     for (const UserData &user : user_data)
     {
-        userFile << "User_Name : " << user.username << "  Password : " << user.password << endl;
+        userFile << user.username <<" "<< user.password << endl;
     }
     userFile.close();
 }

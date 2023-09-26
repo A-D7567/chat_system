@@ -5,7 +5,7 @@
 #include <string>
 #include <netinet/in.h>
 
-const int PORT = 3336;
+const int PORT = 3338;
 const int MAX_CONNECTIONS = 5;
 const int MAX_BUFFER_SIZE = 1024;
 

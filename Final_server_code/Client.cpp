@@ -8,7 +8,7 @@
 #include <thread>
 #include <netinet/in.h>
 
-constexpr int PORT = 3337;
+constexpr int PORT = 3338;
 using namespace std;
 
 int client_socket;
@@ -39,6 +39,7 @@ void handle_rec(int client_socket)
 
     while (1)
     {
+        memset(message, 0, sizeof(message));
         int bytes_received = recv(client_socket, message, sizeof(message), 0);
         if (bytes_received <= 0)
         {
@@ -48,6 +49,7 @@ void handle_rec(int client_socket)
         }
 
         cout << "\rServer : " << message << endl;
+        
     }
 }
 
@@ -63,7 +65,7 @@ int main()
     sockaddr_in server_address;
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(PORT);
-    server_address.sin_addr.s_addr = inet_addr("172.20.104.240");
+    server_address.sin_addr.s_addr = INADDR_ANY;//inet_addr("172.20.104.240");
 
     if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
     {
@@ -74,15 +76,17 @@ int main()
     char message[1024];
 
 
-while (1)
+//while (1)
 {
     int choice;
+
     cout << "Select an option:" << endl;
     cout << "1. Login" << endl;
     cout << "2. Signup" << endl;
     cout << "3. Quit" << endl;
     cout << "Enter your choice: ";
     cin >> choice;
+    
     cin.ignore();
 
     if (choice == 1)
@@ -133,11 +137,14 @@ while (1)
     {
         // Quit
         cout << "Exiting the program." << endl;
-        break;
+        exit(0);
     }
     else
     {
         cout << "Invalid choice. Please select 1, 2, or 3." << endl;
+    }
+
+    while(1);
 
 }
 

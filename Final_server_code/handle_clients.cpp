@@ -6,9 +6,96 @@
 #include "server.h"
 #include "user_auth.h"
 #include "handle_clients.h"
+
 using namespace std;
 
 extern vector<UserData> user_data;
+
+char buffer[1024];
+string username;
+
+void handel_signup(int client_socket)
+{
+
+    // Handle sign-up
+    // send(client_socket, "Enter a new username: ", strlen("Enter a new username: "), 0);
+
+    memset(buffer, 0, sizeof(buffer));
+    int username_length = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (username_length <= 0)
+    {
+        cout << "Enter Valid Username.." << endl;
+        close(client_socket);
+        return;
+    }
+
+    string new_username(buffer, username_length);
+
+     //send(client_socket, "Enter a new password: ", strlen("Enter a new password: "), 0);
+    memset(buffer, 0, sizeof(buffer));
+
+    int password_length = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (password_length <= 0)
+    {
+        cout << "Enter valid Password.." << endl;
+        close(client_socket);
+        return;
+    }
+
+    string new_password(buffer, password_length);
+    UserData new_user;
+    new_user.username = new_username;
+    new_user.password = new_password;
+    user_data.push_back(new_user);
+    saveUserFile();
+
+    send(client_socket, "Signup successful.", strlen("Signup successful."), 0);
+}
+
+void handel_login(int client_socket)
+{  
+
+    // Handle login
+    //send(client_socket, "Enter username: ", strlen("Enter username: "), 0);
+
+    memset(buffer, 0, sizeof(buffer));
+    int username_length = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (username_length <= 0)
+    {
+        cout << "Enter Valid Username.." << endl;
+        close(client_socket);
+        return;
+    }
+
+    string client_username(buffer, username_length);
+    //send(client_socket, "Enter password: ", strlen("Enter password: "), 0);
+    memset(buffer, 0, sizeof(buffer));
+
+    int password_length = recv(client_socket, buffer, sizeof(buffer), 0);
+
+    if (password_length <= 0)
+    {
+        cout << "Enter valid Password.." << endl;
+        close(client_socket);
+        return;
+    }
+
+    string client_password(buffer, password_length);
+
+    if (authenticateUser(client_username, client_password))
+    {
+        username = client_username;
+        send(client_socket, "Authentication successful.", strlen("Authentication successful."), 0);
+    }
+    else
+    {
+        send(client_socket, "Authentication failed. Try again.", strlen("Authentication failed. Try again."), 0);
+    }
+}
+
 
 void handle_rec(int client_socket)
 {
@@ -23,73 +110,24 @@ void handle_rec(int client_socket)
             return;
         }
 
-        cout << "client: " << buffer << endl;
-
-        // Add logic to process client messages here
+        cout << "\r client: " << buffer << endl;
+        //Add logic to process client messages here
 
         if (strcmp(buffer, "login") == 0)
         {
             // Handle login
-            char username[1024];
-            char password[1024];
-
-            int bytes_received_username = recv(client_socket, username, sizeof(username), 0);
-            int bytes_received_password = recv(client_socket, password, sizeof(password), 0);
-
-            if (bytes_received_username <= 0 || bytes_received_password <= 0)
-            {
-                cout << "username and password not recieved." << endl;
-                continue;
-            }
-
-            // Authenticate the user
-            if (authenticateUser(username, password))
-            {
-                send(client_socket, "Authentication successful", strlen("Authentication successful"), 0);
-                cout << "Authentication successful for user: " << username << endl;
-            }
-            else
-            {
-                send(client_socket, "Authentication failed", strlen("Authentication failed"), 0);
-                cout << "Authentication failed for user: " << username << endl;
-            }
+            handel_login(client_socket);
         }
         else if (strcmp(buffer, "signup") == 0)
         {
             // Handle sign-up
-            char new_username[1024];
-            char new_password[1024];
-
-            int bytes_received_new_username = recv(client_socket, new_username, sizeof(new_username), 0);
-            int bytes_received_new_password = recv(client_socket, new_password, sizeof(new_password), 0);
-
-            if (bytes_received_new_username <= 0 || bytes_received_new_password <= 0)
-            {
-                cout << "Error receiving new username and password." << endl;
-                continue;
-            }
-
-            // Check if the username is already taken
-            if (isUsernameTaken(new_username))
-            {
-                send(client_socket, "Username is already taken", strlen("Username is already taken"), 0);
-                cout << "Username is already taken: " << new_username << endl;
-            }
-            else
-            {
-                UserData new_user;
-                new_user.username = new_username;
-                new_user.password = new_password;
-                user_data.push_back(new_user);
-
-                send(client_socket, "Sign-up successful", strlen("Sign-up successful"), 0);
-                cout << "Sign-up successful for user: " << new_username << endl;
-            }
+            handel_signup(client_socket);
+            
         }
-        else
-        {
-            break;
-        }
+        // else
+        // {
+        //     send(client_socket, "Authentication required.", strlen("Authentication required."), 0);
+        // }
     }
 }
 
@@ -107,6 +145,7 @@ void handle_send(int client_socket)
         }
 
         send(client_socket, buffer, strlen(buffer), 0);
+        memset(buffer, 0, sizeof(buffer));
     }
 }
 
@@ -116,8 +155,8 @@ void handle_client(int client_socket)
     cout << "_________________________________________________" << client_socket << "\n";
     cout << "Successfully connected to client " << client_socket << "\n";
     cout << "_________________________________________________" << client_socket << "\n";
-
-    thread(handle_send, client_socket).detach();
+  
     thread(handle_rec, client_socket).detach();
- 
- }
+    thread(handle_send, client_socket).detach();
+   
+}

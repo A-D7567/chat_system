@@ -6,6 +6,8 @@
 #include "server.h"
 #include "user_auth.h"
 #include "handle_clients.h"
+
+
 using namespace std;
 extern vector<UserData> user_data;
 
@@ -52,7 +54,6 @@ int main()
             perror("Accepting connection failed");
             continue;
         }
-
         client_sockets.push_back(client_socket);
 
         // Thread to handle the client
