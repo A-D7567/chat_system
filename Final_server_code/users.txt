@@ -1,8 +1,2 @@
-hello hi
-<<<<<<< HEAD
-divyaraj hi
-=======
-divyaraj hi
-divyaraj hi
-h h
->>>>>>> 4d3cbd783b94fdffc18f2aa76c12a4c62bccaf19
+Akshaikh 1234
+DJ 1234
