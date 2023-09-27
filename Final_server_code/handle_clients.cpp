@@ -31,6 +31,7 @@ void handel_signup(int client_socket)
     }
 
     string new_username(buffer, username_length);
+    username = new_username;
 
      //send(client_socket, "Enter a new password: ", strlen("Enter a new password: "), 0);
     memset(buffer, 0, sizeof(buffer));
@@ -80,6 +81,7 @@ void handel_login(int client_socket)
     }
 
     string client_username(buffer, username_length);
+    username = client_username; 
     //send(client_socket, "Enter password: ", strlen("Enter password: "), 0);
     memset(buffer, 0, sizeof(buffer));
 
@@ -120,6 +122,7 @@ void handle_rec(int client_socket)
             return;
         }
 
+        // string user_name;
         if (strcmp(buffer, "login") == 0)
         {
             // Handle login
@@ -128,8 +131,7 @@ void handle_rec(int client_socket)
         else if (strcmp(buffer, "signup") == 0)
         {
             // Handle sign-up
-            handel_signup(client_socket);
-            
+            handel_signup(client_socket);            
         }
         cout << "\r" <<username << " : " << buffer << endl;
         // else
