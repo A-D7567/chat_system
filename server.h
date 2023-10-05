@@ -8,7 +8,7 @@
 #include "user_auth.h"
 #include "handle_clients.h"
 
-const int PORT = 1121;
+const int PORT = 1124;
 const int MAX_CONNECTIONS = 5;
 const int MAX_BUFFER_SIZE = 1024;
 

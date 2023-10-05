@@ -51,7 +51,9 @@ void Server::start_Client_socket()
         perror(" Listening failed ");
         exit(EXIT_FAILURE);
     }
-    cout << " Server listening on port " << PORT << endl;
+    cout << "-------------------------------------------" << endl;
+    cout << "Server listening on port " << PORT << endl;
+    cout << "-------------------------------------------" << endl;
 
     while (true)
     {
