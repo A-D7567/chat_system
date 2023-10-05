@@ -1,82 +1,63 @@
+// client.cpp
+
 #include <iostream>
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-#include <thread>
 #include <netinet/in.h>
+#include "client.h"
+#include "user_credentials.h"
+#include "handle_server.h"
+#include <thread>
 
-constexpr int PORT = 22211;
-
-
+using namespace std;
 int client_socket;
 
+Client::Client() {}
 
-void handle_send(int a)
+Client::~Client()
 {
-    char message[1024];
+    close(client_socket);
+}
 
-    while(1)
+void Client::connect_to_server()
+{
+    UserCredentials local_credentials;
+    while (1)
     {
-        std::cout << "Client : ";
-        std::cin.getline(message, sizeof(message));
-
-        if (strcmp(message, "q") == 0) 
+        client_socket = socket(AF_INET, SOCK_STREAM, 0);
+        if (client_socket == -1)
         {
-            close(client_socket);
+            perror("Socket creation failed");
+            exit(EXIT_FAILURE);
         }
 
-        send(client_socket, message, strlen(message), 0);
-        memset(message, 0, sizeof(message));
-    }
+        sockaddr_in server_address;
+        server_address.sin_family = AF_INET;
+        server_address.sin_port = htons(PORT);
+        server_address.sin_addr.s_addr = INADDR_ANY;//inet_addr("172.25.4.13");
 
-}
-
-void handle_rec(int b)
-{
-    char message[1024];
-
-    while(1)
-    {
-    int bytes_received = recv(client_socket, message, sizeof(message), 0);
-        if (bytes_received <= 0) {
-            std::cerr << "Server disconnected." << std::endl;
-             exit(1);
+        if (connect(client_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
+        {
+            perror("Connection failed");
+            exit(EXIT_FAILURE);
         }
 
-    std::cout << "\rServer : " << message << std::endl;
-    }
+        char message[1024];
 
+        thread th1([&local_credentials,client_socket]() {local_credentials.user_credentials(client_socket);});
+
+        th1.join();
+       // cout<<"\nsockect is about to close \n";
+        close(client_socket);
+    }
 }
 
-int main() 
+int main()
 {
-    client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (client_socket == -1) {
-        perror("Socket creation failed");
-        exit(EXIT_FAILURE);
-    }
-
-    sockaddr_in server_address;
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(PORT);
-    server_address.sin_addr.s_addr = INADDR_ANY;//inet_addr("172.25.4.13");
-
-    if (connect(client_socket, (struct sockaddr*)&server_address, sizeof(server_address)) == -1) 
-    {
-        perror("Connection failed");
-        exit(EXIT_FAILURE);
-    }
-
-    char message[1024];
-
-    //while (true) 
-    {
-        std::thread(handle_send, 1).detach();
-        std::thread(handle_rec , 1).detach();
-    }
-    while(1);
-    
+    Client client;
+    client.connect_to_server();
     return 0;
 }
