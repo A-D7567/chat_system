@@ -14,7 +14,7 @@ constexpr int PORT = 1124;
 class Client
 {
 public:
-    Client();
+    // Client();
     ~Client();
     void connect_to_server();
 

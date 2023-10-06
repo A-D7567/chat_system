@@ -9,6 +9,8 @@
 using namespace std;
 vector<UserData> user_data;
 
+
+// This function is used to load the data from the user_credential file  (user.txt)
 void UserManager::loadUserFile()
 {
     ifstream userFile("users.txt");
@@ -26,6 +28,7 @@ void UserManager::loadUserFile()
     userFile.close();
 }
 
+//  This function save the data to user_credential file  (User.txt)
 void UserManager::saveUserFile()
 {
     ofstream userFile("users.txt");

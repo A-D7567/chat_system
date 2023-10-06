@@ -13,19 +13,15 @@ struct UserData
     string password;
 };
 
-
 class UserManager
 {
 public:
-    
-    UserManager()
-    {
 
-    }
-    void loadUserFile();
-    void saveUserFile();
+    void loadUserFile();   // This function is used to load the data from the user_credential file  (user.txt)
+    void saveUserFile();   //  This function save the data to user_credential file  (User.txt)
     bool authenticateUser(const string &username, const string &password);
     bool isUsernameTaken(const string &username);
+
 };
 
 // vector <UserData> user_data;

@@ -146,13 +146,13 @@ void Clienthandler::handle_rec()
                 return;
             }
             
-            cout <<"-------------------------------------------"<< endl;
+            cout <<"---------------------------------------------"<< endl;
             cout <<"\rNew account has been created with username : " << username << endl;
-            cout <<"-------------------------------------------"<< endl;
+            cout <<"---------------------------------------------"<< endl;
         }
         else
         {
-            cout <<"\r" << username << " : " << buffer << " " << endl;
+            cout <<"\r " << username << " : " << buffer << " " << endl;
         }
         
         write(0,"\rServer : ", strlen("\rServer : "));
@@ -179,7 +179,7 @@ void Clienthandler::handle_send()
 
         send(client_socket, buffer, strlen(buffer), 0);
         memset(buffer, 0, sizeof(buffer));
-        cout <<"Server : ";
+        cout <<" Server : ";
     }
 }
 
@@ -187,9 +187,9 @@ int Clienthandler::handle_client()
 {
 
     char buffer[1024];
-    cout << "-------------------------------------------" << "\n";
+    cout << "-------------------------------------------------" << "\n";
     cout << "A Client is trying to connect on FD : " << client_socket << "\n";
-    cout << "-------------------------------------------" << "\n";
+    cout << "-------------------------------------------------" << "\n";
 
     thread rec( [this](){ handle_rec(); } );
     thread ([this](){ handle_send(); }).detach();

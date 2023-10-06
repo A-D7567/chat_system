@@ -1,4 +1,9 @@
 // server.cpp
+
+//////////////////////////////////////////////////// Header ///////////////////////////////////////////////////////////////
+/*       In this file contains the main function and server side impelementations for the client - server project 
+*/
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <iostream>
 #include <vector>
 #include <unistd.h>
@@ -10,13 +15,9 @@
 
 using namespace std;
 
-extern vector<UserData> user_data;
-extern UserManager local_user;
 
-Server::Server() 
-{
-
-}
+extern vector<UserData> user_data;                        // Vector to store the user data
+extern UserManager local_user;                            // 
 
 Server::~Server()
 {
@@ -51,9 +52,7 @@ void Server::start_Client_socket()
         perror(" Listening failed ");
         exit(EXIT_FAILURE);
     }
-    cout << "-------------------------------------------" << endl;
-    cout << "Server listening on port " << PORT << endl;
-    cout << "-------------------------------------------" << endl;
+    cout << " Server listening on port " << PORT << endl;
 
     while (true)
     {

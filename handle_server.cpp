@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <thread>
+#include <cstdlib>
 
 using namespace std;
 
@@ -15,7 +16,6 @@ void ServerHandler::handle_send(string username)
 {
     char message[1024];
     // string username;
-
     while (1)
     {
 
@@ -27,6 +27,7 @@ void ServerHandler::handle_send(string username)
         
         if (strcmp(message, "@exit") == 0)
                 {
+                    cout << "Exiting the program." << endl;
                     close(client_socket);
                     exit(0);
                 }
@@ -38,11 +39,13 @@ void ServerHandler::handle_send(string username)
 
                 if (strcmp(message, "@exit") == 0)
                 {
+
                     close(client_socket);
                     exit(0);
                 }
                 if (strcmp(message, "@yes") == 0)
                 {
+                    system("clear");
                     close(client_socket);
                     flag=0;
                     break;
@@ -61,6 +64,7 @@ void ServerHandler::handle_send(string username)
 
 void ServerHandler::handle_rec(string username)
 {
+    system("clear");
     char message[1024];
 
     // string username;
@@ -81,6 +85,7 @@ void ServerHandler::handle_rec(string username)
         {
             
             cerr << "\rServer disconnected.";
+
             close(client_socket);
             flag=1;
             cout << "\n\nDo you Want to Try Again ( @yes / @exit) :\n";
