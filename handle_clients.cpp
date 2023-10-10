@@ -8,9 +8,10 @@
 
 using namespace std;
 
-extern vector<UserData> user_data;
-UserManager local_user;
+extern vector<UserData> user_data;    // vector to store the user data
+UserManager local_user;               // This object of Class UserManager is responsible for loading and storing the data on user file
 
+// For creating a new user this function can be used
 int Clienthandler::handel_signup()
 {
     // Handle sign-up
@@ -58,9 +59,9 @@ int Clienthandler::handel_signup()
 
 }
 
+// handel_login function verify and validate the user
 int Clienthandler::handel_login()
-{   // Handle login
-    // send(client_socket, "Enter username: ", strlen("Enter username: "), 0);
+{   
 
     memset(buffer, 0, sizeof(buffer));
     int username_length = recv(client_socket, buffer, sizeof(buffer), 0);
@@ -102,7 +103,7 @@ int Clienthandler::handel_login()
 
 }
 
-
+// handle_rec function is used to recive data such as messsages, username ,password and etc from the client
 void Clienthandler::handle_rec()
 {
     char buffer[1024];
@@ -159,6 +160,7 @@ void Clienthandler::handle_rec()
     }
 }
 
+// Send messages from the server to the client
 void Clienthandler::handle_send()
 {
     char buffer[1024];
@@ -183,6 +185,8 @@ void Clienthandler::handle_send()
     }
 }
 
+
+// handle_client function starts the send and revice functionality for the client
 int Clienthandler::handle_client()
 {
 

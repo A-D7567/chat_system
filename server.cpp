@@ -1,9 +1,10 @@
 // server.cpp
 
 //////////////////////////////////////////////////// Header ///////////////////////////////////////////////////////////////
-/*       In this file contains the main function and server side impelementations for the client - server project 
-*/
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*       In this file contains the main function and some server side function impelementations of the client - server project
+ */
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <iostream>
 #include <vector>
 #include <unistd.h>
@@ -15,20 +16,18 @@
 
 using namespace std;
 
+extern vector<UserData> user_data; // Vector to store the user data
 
-extern vector<UserData> user_data;                        // Vector to store the user data
-extern UserManager local_user;                            // 
-
-Server::~Server()
+Server::~Server() // distructor for the calss Server
 {
     close(server_socket);
-    userManager.saveUserFile();
+    local_user.saveUserFile();
 }
 
-void Server::start_Client_socket()
+void Server::start_Client_socket() // This function create the socket and Accepts the client request
 {
-    userManager.loadUserFile();
-    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    local_user.loadUserFile();                          // load the user_credential data from the file
+    int server_socket = socket(AF_INET, SOCK_STREAM, 0); // creating the socket for the server
 
     if (server_socket == -1)
     {
@@ -41,13 +40,13 @@ void Server::start_Client_socket()
     server_address.sin_port = htons(PORT);
     server_address.sin_addr.s_addr = INADDR_ANY;
 
-    if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1)
+    if (bind(server_socket, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) // binding the server data with socket created
     {
         perror(" Binding failed ");
         exit(EXIT_FAILURE);
     }
 
-    if (listen(server_socket, MAX_CONNECTIONS) == -1)
+    if (listen(server_socket, MAX_CONNECTIONS) == -1) // strat listing for the client request
     {
         perror(" Listening failed ");
         exit(EXIT_FAILURE);
@@ -69,12 +68,13 @@ void Server::start_Client_socket()
         }
 
         client_sockets.push_back(client_socket);
-        thread handle([&local_client]()
-                      { local_client.handle_client(); });
-        handle.join();
+
+        thread handle_client([&local_client]()
+                             { local_client.handle_client(); }); // Creating the thread to handle the client
+
+        handle_client.join(); // program is waiting for thread to join ;
     }
 }
-
 
 int main()
 {

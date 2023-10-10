@@ -1,4 +1,10 @@
-//user_auth.cpp
+// user_auth.cpp
+
+//////////////////////////////////////////////////// Header ///////////////////////////////////////////////////////////////////////
+/* In this contains function defination for loading, savaing and authenticating user_credential data for the client - server project
+ */
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <iostream>
 #include <fstream>
 #include <algorithm>
@@ -7,8 +13,8 @@
 #include <vector>
 
 using namespace std;
-vector<UserData> user_data;
 
+vector<UserData> user_data; // vector to store the user data
 
 // This function is used to load the data from the user_credential file  (user.txt)
 void UserManager::loadUserFile()
@@ -39,14 +45,15 @@ void UserManager::saveUserFile()
     }
     for (const UserData &user : user_data)
     {
-        userFile << user.username <<" "<< user.password << endl;
+        userFile << user.username << " " << user.password << endl;
     }
     userFile.close();
 }
 
+// Authenticate the user by verify password and username
 bool UserManager::authenticateUser(const std::string &username, const std::string &password)
 {
-   for (const UserData &user : user_data)
+    for (const UserData &user : user_data)
     {
         if (user.username == username)
         {
@@ -62,9 +69,10 @@ bool UserManager::authenticateUser(const std::string &username, const std::strin
         }
     }
 
-    return false; 
+    return false;
 }
 
+// Is username taken verify that if the user is already taken by existing user or not
 bool UserManager::isUsernameTaken(const std::string &username)
 {
     for (const UserData &user : user_data)
